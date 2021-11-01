@@ -33,7 +33,10 @@ public class Cars extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //response.setContentType("text/html;charset=UTF-8");
+        request.setAttribute("numberOfFreeParkingSpots", 10);
         request.getRequestDispatcher("/WEB-INF/pages/cars.jsp").forward(request, response);
+        
+        
         try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
