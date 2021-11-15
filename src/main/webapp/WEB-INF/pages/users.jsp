@@ -2,19 +2,19 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags"%>
 <%@taglib prefix="c" url="http//java.sun.com/jsp/jstl/core" %>
 
-<t:pageTemplate pageTitle="Cars">
-    <h1>Cars</h1>
-    <c:forEach var="car" items="${cars}" varStatus="status">
+<t:pageTemplate pageTitle="Users">
+    <h1>Users</h1>
+    <c:forEach var="user" items="${users}" varStatus="status">
     <div class="row">
-        <div class="col-md-4">
-            ${car.licensePlate}
-        </div>
-        <div class="col-md-4">
-            ${car.parkingSpot}
-        </div>
         <div class="col-md-4">
             ${car.username}
         </div>
+        <div class="col-md-4">
+            ${car.email}
+        </div>
+        <div class="col-md-4">
+            ${car.position}
+        </div>
     </c:forEach>
-    <h5>Free parking spots: ${numberOfFreeParkingSpots}</h5>
+    
 </t:pageTemplate>
