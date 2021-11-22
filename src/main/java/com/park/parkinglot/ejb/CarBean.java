@@ -7,6 +7,7 @@ package com.park.parkinglot.ejb;
 
 import com.park.parkinglot.common.CarDetails;
 import com.park.parkinglot.entity.Car;
+import com.park.parkinglot.entity.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -51,4 +52,16 @@ public class CarBean {
         return detailsList;
     }
 
+    public void createCar(String licensePlate, String parkingSpot, Integer userId) {
+        LOG.info("createCar");
+        Car car = new Car();
+        car.setLicensePlate(licensePlate);
+        car.setParkingSpot(parkingSpot);
+        
+        User user = em.find(User.class, userId);
+        user.getCars().add(car);
+        car.setUser(user);
+        
+        em.persist(car);
+    }
 }

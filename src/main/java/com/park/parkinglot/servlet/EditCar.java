@@ -22,12 +22,12 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Teodor
  */
-@WebServlet(name = "AddCar", urlPatterns = {"/AddCar"})
-public class AddCar extends HttpServlet {
+@WebServlet(name = "EditCar", urlPatterns = {"/EditCar"})
+public class EditCar extends HttpServlet {
 
     @Inject
     UserBean userBean;
-    
+
     @Inject
     CarBean carBean;
 
@@ -48,10 +48,10 @@ public class AddCar extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AddCar</title>");
+            out.println("<title>Servlet EditCar</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AddCar at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet EditCar at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -71,7 +71,7 @@ public class AddCar extends HttpServlet {
             throws ServletException, IOException {
         List<UserDetails> users = userBean.getAllUsers();
         request.setAttribute("users", users);
-        request.getRequestDispatcher("/WEB-INF/pages/addCar.jsp");
+        request.getRequestDispatcher("/WEB-INF/pages/editCar.jsp").forward(request, response);
     }
 
     /**
@@ -85,13 +85,7 @@ public class AddCar extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String licensePlate = request.getParameter("license_plate");
-        String parkingSpot = request.getParameter("parking_spot");
-        int ownerId = Integer.parseInt(request.getParameter("owner_id"));
-
-        carBean.createCar(licensePlate, parkingSpot, ownerId);
-        
-        response.sendRedirect(request.getContextPath()+"/Cars");
+        processRequest(request, response);
     }
 
     /**
