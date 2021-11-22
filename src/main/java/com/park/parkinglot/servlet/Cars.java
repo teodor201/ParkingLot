@@ -9,6 +9,7 @@ import com.park.parkinglot.common.CarDetails;
 import com.park.parkinglot.ejb.CarBean;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -84,7 +85,15 @@ public class Cars extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String[] carIdsAsString = request.getParameterValues("car_ids");
+        if(carIdsAsString != null){
+            List<Integer> carIds = new ArrayList<>();
+            for(String carIdAsStirng :carIdsAsString){
+                carIds.add(Integer.parseInt(carIdAsStirng));
+            }
+            carBean.deleteCarsByIds(carIds);
+        }
+        response.sendRedirect(request.getContextPath()+"/Cars");
     }
 
     /**
