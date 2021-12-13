@@ -5,12 +5,10 @@
  */
 package com.park.parkinglot.servlet;
 
-import com.park.parkinglot.common.UserDetails;
-import com.park.parkinglot.ejb.CarBean;
 import com.park.parkinglot.ejb.UserBean;
+import com.park.parkinglot.util.PasswordUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.HttpConstraint;
@@ -25,15 +23,12 @@ import javax.servlet.http.HttpServletResponse;
  * @author Teodor
  */
 @ServletSecurity(value=@HttpConstraint(rolesAllowed={"AdminRole"}))
-@WebServlet(name = "AddCar", urlPatterns = {"/AddCar"})
-public class AddCar extends HttpServlet {
+@WebServlet(name = "AddUser", urlPatterns = {"/AddUser"})
+public class AddUser extends HttpServlet {
 
-    @Inject
-    UserBean userBean;
     
     @Inject
-    CarBean carBean;
-
+    UserBean userBean;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -51,10 +46,10 @@ public class AddCar extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AddCar</title>");
+            out.println("<title>Servlet AddUser</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AddCar at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet AddUser at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -72,9 +67,7 @@ public class AddCar extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        List<UserDetails> users = userBean.getAllUsers();
-        request.setAttribute("users", users);
-        request.getRequestDispatcher("/WEB-INF/pages/addCar.jsp");
+        request.getRequestDispatcher("WEB-INF/pages/addUser.jsp").forward(request,response);
     }
 
     /**
@@ -88,13 +81,16 @@ public class AddCar extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String licensePlate = request.getParameter("license_plate");
-        String parkingSpot = request.getParameter("parking_spot");
-        int ownerId = Integer.parseInt(request.getParameter("owner_id"));
-
-        carBean.createCar(licensePlate, parkingSpot, ownerId);
+        String username = request.getParameter("username");
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
+        String position = request.getParameter("position");
         
-        response.sendRedirect(request.getContextPath()+"/Cars");
+        String passwordSha256 = PasswordUtil.convertToSha256(password);
+        
+        userBean.createUser(username, email, passwordSha256, position);
+    
+        response.sendRedirect(request.getContextPath()+"/Users");
     }
 
     /**

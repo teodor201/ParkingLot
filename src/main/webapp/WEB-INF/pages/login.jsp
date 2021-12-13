@@ -1,6 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags"%>
-<%@taglib prefix="c" url="http//java.sun.com/jsp/jstl/core" %>
+
 
 <t:pageTemplate pageTitle="Login">
     <form class="form-signin" method="POST" action="j_security_check">

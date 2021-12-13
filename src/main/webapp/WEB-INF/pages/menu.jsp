@@ -38,10 +38,10 @@
                 <li class="nav-item">
                     <c:choose>
                         <c:when test="${pageContext.request.getRemoteUser()==null}">
-                            <a class="nav-link" href="${pageContext.request.context.Path}/Login">Login</a>
+                            <a class="nav-link" href="${pageContext.request.contextPath}/Login">Login</a>
                         </c:when>
                         <c:otherwise>
-                            <a class="nav-link" href="${pageContext.request.context.Path}/Logout">Logout</a>
+                            <a class="nav-link" href="${pageContext.request.contextPath}/Logout">Logout</a>
                         </c:otherwise>
                     </c:choose>
                 </li>
