@@ -10,6 +10,7 @@ import com.park.parkinglot.common.UserDetails;
 import com.park.parkinglot.entity.Car;
 import com.park.parkinglot.entity.User;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.ejb.EJBException;
@@ -29,14 +30,22 @@ public class UserBean {
 
     @PersistenceContext
     private EntityManager em;
-    
-    public void createUser(String username, String email, String passwordSha256, String position){
+
+    public Collection<String> findUsernames(Collection<Integer> userIds) {
+        LOG.info("findUsernames");
+        List<String> usernames = (List<String>) em.createQuery("SELECT u.username FROM User u WHERE u.id IN ?1")
+                .setParameter(1, userIds)
+                .getResultList();
+        return usernames;
+    }
+
+    public void createUser(String username, String email, String passwordSha256, String position) {
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(passwordSha256);
         user.setPosition(position);
-        
+
         em.persist(user);
     }
 
