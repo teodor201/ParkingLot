@@ -25,16 +25,16 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Teodor
  */
-@DeclareRoles({"AdminRole","ClientRole"})
+@DeclareRoles({"AdminRole", "ClientRole"})
 @ServletSecurity(
-    value = @HttpConstraint(
-        rolesAllowed = {"AdminRole"})
+        value= @HttpConstraint(
+                rolesAllowed = {"AdminRole"}
+        )
 )
+
 @WebServlet(name = "Cars", urlPatterns = {"/Cars"})
 public class Cars extends HttpServlet {
-    
-    @Inject
-    private CarBean carBean;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -44,22 +44,9 @@ public class Cars extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet Cars</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet Cars at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
+    @Inject
+    private CarBean carBean;
+
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -73,12 +60,13 @@ public class Cars extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //processRequest(request, response);
-        request.setAttribute("activePage","Cars");
+        request.setAttribute("pageActive", "Cars");
         request.setAttribute("numberOfFreeParkingSpots", 10);
-        List<CarDetails> cars = carBean.getAllCars();
-        request.setAttribute("cars",cars);
         
+        List<CarDetails> cars = carBean.getAllCars();
+        request.setAttribute("cars", cars);
+        
+
         request.getRequestDispatcher("/WEB-INF/pages/cars.jsp").forward(request, response);
     }
 
@@ -93,15 +81,20 @@ public class Cars extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String[] carIdsAsString = request.getParameterValues("car_ids");
-        if(carIdsAsString != null){
-            List<Integer> carIds = new ArrayList<>();
-            for(String carIdAsStirng :carIdsAsString){
-                carIds.add(Integer.parseInt(carIdAsStirng));
+        
+        String[] carIdsAsStr = request.getParameterValues("car_ids");
+        if(carIdsAsStr != null) {
+            List<Integer> carIds = new ArrayList();
+            for (String idAsStr : carIdsAsStr) {
+                carIds.add(Integer.parseInt(idAsStr));
+                
             }
-            carBean.deleteCarsByIds(carIds);
+            carBean.deleteCarsById(carIds);
         }
-        response.sendRedirect(request.getContextPath()+"/Cars");
+        
+        response.sendRedirect(request.getContextPath() + "/Cars");
+        
+        
     }
 
     /**

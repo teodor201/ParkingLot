@@ -19,14 +19,13 @@ import javax.enterprise.context.SessionScoped;
 public class InvoiceBean {
     
     private Set<Integer> userIds = new HashSet<Integer>();
-
-    public Set<Integer> getUserIds(){
+    
+    public Set<Integer> getUserIds() {
         return userIds;
     }
-    
-    public void setUserIds(Set<Integer> userIds){
-        this.userIds = userIds;
+
+    public void setUserIds(Set<Integer> userIDs) {
+        this.userIds = userIDs;
     }
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
+
 }

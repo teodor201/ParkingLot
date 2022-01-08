@@ -22,13 +22,10 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Teodor
  */
-@ServletSecurity(value=@HttpConstraint(rolesAllowed={"AdminRole"}))
+@ServletSecurity(value = @HttpConstraint(rolesAllowed = {"AdminRole"}))
 @WebServlet(name = "AddUser", urlPatterns = {"/AddUser"})
 public class AddUser extends HttpServlet {
 
-    
-    @Inject
-    UserBean userBean;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -38,22 +35,9 @@ public class AddUser extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet AddUser</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet AddUser at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
+    @Inject
+    UserBean userBean;
+
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -67,7 +51,7 @@ public class AddUser extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("WEB-INF/pages/addUser.jsp").forward(request,response);
+        request.getRequestDispatcher("/WEB-INF/pages/addUser.jsp").forward(request, response);
     }
 
     /**
@@ -83,14 +67,13 @@ public class AddUser extends HttpServlet {
             throws ServletException, IOException {
         String username = request.getParameter("username");
         String email = request.getParameter("email");
-        String password = request.getParameter("password");
+        String pass = request.getParameter("password");
         String position = request.getParameter("position");
+        String passSha256 = PasswordUtil.convertToSha256(pass);
+
+        userBean.createuser(username, email, passSha256, position);
         
-        String passwordSha256 = PasswordUtil.convertToSha256(password);
-        
-        userBean.createUser(username, email, passwordSha256, position);
-    
-        response.sendRedirect(request.getContextPath()+"/Users");
+        response.sendRedirect(request.getContextPath() + "/Users");
     }
 
     /**

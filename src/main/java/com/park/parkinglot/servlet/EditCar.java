@@ -25,15 +25,9 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Teodor
  */
-@ServletSecurity(value=@HttpConstraint(rolesAllowed={"AdminRole"}))
+@ServletSecurity(value = @HttpConstraint(rolesAllowed = {"AdminRole"}))
 @WebServlet(name = "EditCar", urlPatterns = {"/EditCar"})
 public class EditCar extends HttpServlet {
-    
-    @Inject
-    UserBean userBean;
-    
-    @Inject
-    CarBean carBean;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,22 +38,12 @@ public class EditCar extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet EditCar</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet EditCar at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
+    @Inject
+    CarBean carBean;
+
+    @Inject
+    UserBean userBean;
+
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -73,14 +57,15 @@ public class EditCar extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         List<UserDetails> users = userBean.getAllUsers();
         request.setAttribute("users", users);
-        
+
         int carId = Integer.parseInt(request.getParameter("id"));
-        CarDetails car = carBean.findById(carId);
+        CarDetails car = carBean.findByID(carId);
         request.setAttribute("car", car);
-        
-        request.getRequestDispatcher("/WEB-INF/pages/editCar.jsp").forward(request, response);
+
+        request.getRequestDispatcher("./WEB-INF/pages/editCar.jsp").forward(request, response);
     }
 
     /**
@@ -94,13 +79,15 @@ public class EditCar extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String licensePlate = request.getParameter("license_plate");
-        String parkingSpot = request.getParameter("parking_spot");
-        int ownerId = Integer.parseInt(request.getParameter("onwer_id"));
-        int carId = Integer.parseInt(request.getParameter("car_id"));
+
+        String licensePlate = request.getParameter("licensePlate");
+        String parkingSpot = request.getParameter("parkingSpot");
+        int ownerID = Integer.parseInt(request.getParameter("owner"));
+        int carID = Integer.parseInt(request.getParameter("carID"));
         
-        carBean.updateCar(carId, licensePlate, parkingSpot, ownerId);
-        response.sendRedirect(request.getContextPath()+"/Cars");
+        carBean.updateCar(carID, licensePlate, parkingSpot, ownerID);
+        
+        response.sendRedirect(request.getContextPath() + "/Cars");
     }
 
     /**

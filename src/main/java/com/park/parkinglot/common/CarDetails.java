@@ -38,5 +38,4 @@ public class CarDetails implements java.io.Serializable {
     public String getUsername() {
         return username;
     }
-    
 }

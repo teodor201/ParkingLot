@@ -10,6 +10,7 @@ package com.park.parkinglot.common;
  * @author Teodor
  */
 public class UserDetails implements java.io.Serializable {
+    
     private Integer id;
     private String username;
     private String email;
@@ -38,4 +39,5 @@ public class UserDetails implements java.io.Serializable {
         return position;
     }
     
+         
 }

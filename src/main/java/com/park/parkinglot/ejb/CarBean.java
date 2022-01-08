@@ -6,7 +6,9 @@
 package com.park.parkinglot.ejb;
 
 import com.park.parkinglot.common.CarDetails;
+import com.park.parkinglot.common.PhotoDetails;
 import com.park.parkinglot.entity.Car;
+import com.park.parkinglot.entity.Photo;
 import com.park.parkinglot.entity.User;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +19,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -30,16 +33,10 @@ public class CarBean {
     @PersistenceContext
     private EntityManager em;
 
-    public CarDetails findById(Integer carId) {
-        Car car = em.find(Car.class, carId);
-        return new CarDetails(car.getId(), car.getLicensePlate(), car.getParkingSpot(), car.getUser().getUsername());
-    }
-
     public List<CarDetails> getAllCars() {
         LOG.info("getAllCars");
         try {
-            Query query = em.createQuery("SELECT c FROM Car c");
-            List<Car> cars = (List<Car>) query.getResultList();
+            List<Car> cars = (List<Car>) em.createQuery("SELECT c FROM Car c").getResultList();
             return copyCarsToDetails(cars);
         } catch (Exception ex) {
             throw new EJBException(ex);
@@ -47,36 +44,36 @@ public class CarBean {
     }
 
     private List<CarDetails> copyCarsToDetails(List<Car> cars) {
-        List<CarDetails> detailsList = new ArrayList<>();
-        for (Car car : cars) {
-            CarDetails carDetails = new CarDetails(car.getId(),
-                    car.getLicensePlate(),
-                    car.getParkingSpot(),
-                    car.getUser().getUsername());
-            detailsList.add(carDetails);
+        List<CarDetails> cdl = new ArrayList<>();
+        for (Car c : cars) {
+            CarDetails cd = new CarDetails(c.getId(),
+                    c.getLicensePlate(),
+                    c.getParkingSpot(),
+                    c.getUser().getUsername());
+            cdl.add(cd);
         }
-        return detailsList;
-    }
 
-    public void createCar(String licensePlate, String parkingSpot, Integer userId) {
+        return cdl;
+    }
+    
+    public void createCar(String plate, String spot, Integer userID) {
         LOG.info("createCar");
         Car car = new Car();
-        car.setLicensePlate(licensePlate);
-        car.setParkingSpot(parkingSpot);
-
-        User user = em.find(User.class, userId);
+        car.setLicensePlate(plate);
+        car.setParkingSpot(spot);
+        
+        User user =em.find(User.class, userID);
         user.getCars().add(car);
         car.setUser(user);
-
+        
         em.persist(car);
     }
-
-    public void updateCar(int carId, String licensePlate, String parkingSpot, int userId) {
-
+    
+    public void updateCar(Integer carId, String plate, String spot, Integer userId) {
         LOG.info("updateCar");
         Car car = em.find(Car.class, carId);
-        car.setLicensePlate(licensePlate);
-        car.setParkingSpot(parkingSpot);
+        car.setLicensePlate(plate);
+        car.setParkingSpot(spot);
         
         User oldUser = car.getUser();
         oldUser.getCars().remove(car);
@@ -86,11 +83,45 @@ public class CarBean {
         car.setUser(user);
     }
     
-    public void deleteCarsByIds(Collection<Integer> ids){
-        LOG.info("deleteCarsByIds");
-        for (Integer id : ids){
+    public CarDetails findByID(Integer id) {
+        Car car = em.find(Car.class, id);
+        return new CarDetails(car.getId(), car.getLicensePlate(), car.getParkingSpot(), car.getUser().getUsername());
+    }
+
+    // Add business logic below. (Right-click in editor and choose
+    // "Insert Code > Add Business Method")
+
+    public void deleteCarsById(List<Integer> carIds) {
+        LOG.info("DeleteCarById");
+        for (Integer id : carIds) {
             Car car = em.find(Car.class, id);
             em.remove(car);
+        }
+    }
+    
+    public void addPhotoToCar(Integer carId, String filename, String fileType, byte[] fileContent) {
+        LOG.info("addPhotoToCar");
+        Photo photo = new Photo();
+        photo.setFilename(filename);
+        photo.setFileType(fileType);
+        photo.setFileContent(fileContent);
+        
+        Car car = em.find(Car.class, carId);
+        car.setPhoto(photo);
+        photo.setCar(car);
+        em.persist(photo);
+    }
+    
+    public PhotoDetails findPhotoByCar(Integer id) {
+        TypedQuery<Photo> q = em.createQuery("SELECT p FROM Photo p WHERE p.car.id = :id", Photo.class)
+                .setParameter("id", id);
+        List<Photo> photos = q.getResultList();
+        if(photos.isEmpty()) {
+            return null;
+        } else {
+            Photo photo = photos.get(0);
+            return new PhotoDetails (photo.getId(), photo.getFilename(), photo.getFileType(), 
+            photo.getFileContent());
         }
     }
 }
